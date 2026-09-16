@@ -1,5 +1,6 @@
 interface FocusAlertProps {
   isOpen: boolean;
+  onConfirm: () => void; // Добавили описание функции!
 }
 
 export function FocusAlert({ isOpen }: FocusAlertProps) {

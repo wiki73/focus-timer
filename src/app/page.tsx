@@ -25,8 +25,8 @@ export default function Home() {
   const [sessionCount, setSessionCount] = useState(0);
   const [quote, setQuote] = useState(QUOTES[0]);
 
-  const timerRef = useRef(null);
-
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  
   useEffect(() => {
     const savedCount = localStorage.getItem("focus_intervals");
     if (savedCount) setSessionCount(Number(savedCount));

@@ -29,7 +29,7 @@ export function TimerSettings({ onAdd }: TimerSettingsProps) {
         label="Длительность фокуса (минут)"
         type="number"
         value={time}
-        onChange={(e) => setTime(e.target.valueAsNumber || 0)}
+        onChange={(e) => setTime((e.target as HTMLInputElement).valueAsNumber || 0)}
         min="1"
       />
 
