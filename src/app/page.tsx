@@ -8,8 +8,6 @@ import { QuoteCard } from "../components/QuoteCard";
 import { SessionCounter } from "../components/SessionCounter";
 import { TimerSettings } from "@/components/TimerSettings";
 
-const FOCUS_TIME = 1 * 60;
-
 const QUOTES = [
   "Держи фокус. Большие цели строятся из 5-минутных отрезков.",
   "Внимание — это твоя главная валюта прямо сейчас.",
@@ -19,7 +17,8 @@ const QUOTES = [
 
 export default function Home() {
   const [showsSetting, setShowsSetting] = useState(true);
-  const [secondsLeft, setSecondsLeft] = useState(FOCUS_TIME);
+  const [formtime, setFormTime] = useState(0);
+  const [secondsLeft, setSecondsLeft] = useState(formtime);
   const [isRunning, setIsRunning] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [sessionCount, setSessionCount] = useState(0);
@@ -40,7 +39,7 @@ export default function Home() {
         setSecondsLeft((prev) => {
           if (prev <= 1) {
             handleIntervalComplete();
-            return FOCUS_TIME;
+            return formtime;
           }
           return prev - 1;
         });
@@ -75,17 +74,39 @@ export default function Home() {
 
   const handleReset = () => {
     setIsRunning(false);
-    setSecondsLeft(FOCUS_TIME);
+    setSecondsLeft(formtime);
     setShowAlert(false);
+  };
+
+  const handleFormData = (time: number) => {
+    console.log("Родитель получил данные:", time);
+    setFormTime(time * 60);
+    setSecondsLeft(time * 60);
+    setShowsSetting(false);
+  };
+
+  const handleToForm = () => {
+    setIsRunning(false);
+    setSecondsLeft(formtime);
+    setShowAlert(false);
+    setShowsSetting((p) => (p = !p));
   };
 
   return (
     <main className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4">
       {showsSetting ? (
-        <TimerSettings />
+        <TimerSettings onAdd={handleFormData} />
       ) : (
-        <div className="flex flex-col items-center gap-8 w-full max-w-md bg-slate-900 border border-slate-800 p-8 rounded-3xl shadow-2xl">
-          <header className="text-center">
+        <div className="flex flex-col relative items-center gap-8 w-full max-w-md bg-slate-900 border border-slate-800 p-8 rounded-3xl shadow-2xl">
+          <button
+            type="button"
+            onClick={handleToForm}
+            className="border-2 rounded-2xl border-slate-900 text-slate-300 hover:border-slate-700 bg-slate-800  m-0.5  absolute left-1 top-0.5 p-2 "
+          >
+            форма
+          </button>
+
+          <header className="text-center ">
             <h1 className="text-3xl font-extrabold text-white tracking-wide">
               Focus Timer
             </h1>
