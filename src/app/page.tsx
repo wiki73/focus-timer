@@ -90,8 +90,8 @@ export default function Home() {
   };
 
   const handleFormData = (time: number, sound: string) => {
-    const timeInSeconds = 20;
-    // const timeInSeconds = time * 60;
+    // const timeInSeconds = 20;
+    const timeInSeconds = time * 60;
     setActiveSound(sound);
     setFormTime(timeInSeconds);
     setSecondsLeft(timeInSeconds);
