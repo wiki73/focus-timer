@@ -9,7 +9,7 @@ import { SessionCounter } from "../components/SessionCounter";
 import { TimerSettings } from "@/components/TimerSettings";
 import Link from "next/link";
 
-const QUOTES = [
+const DEFAULT_QUOTES = [
   "Держи фокус. Большие цели строятся из 5-минутных отрезков.",
   "Внимание — это твоя главная валюта прямо сейчас.",
   "Не отвлекайся. Ты уже делаешь прогресс.",
@@ -17,19 +17,34 @@ const QUOTES = [
 ];
 
 export default function Home() {
-  const [showsSetting, setShowsSetting] = useState(true);
+  const [showsSetting, setShowsSetting] = useState(false);
   const [formtime, setFormTime] = useState(0);
-  const [secondsLeft, setSecondsLeft] = useState(0);
+  const [secondsLeft, setSecondsLeft] = useState(5 * 60);
   const [isRunning, setIsRunning] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [sessionCount, setSessionCount] = useState(0);
-  const [quote, setQuote] = useState(QUOTES[0]);
+
+  const [quotes, setQuotes] = useState<string[]>(DEFAULT_QUOTES);
+  const [quote, setQuote] = useState(DEFAULT_QUOTES[0]);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  
+
   useEffect(() => {
     const savedCount = localStorage.getItem("focus_intervals");
     if (savedCount) setSessionCount(Number(savedCount));
+
+    const savedQuotes = localStorage.getItem("user_quotes");
+    if (savedQuotes) {
+      try {
+        const parsed = JSON.parse(savedQuotes);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setQuotes(parsed);
+          setQuote(parsed[Math.floor(Math.random() * parsed.length)]);
+        }
+      } catch (err) {
+        console.error("Ошибка парсинга цитат:", err);
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -47,14 +62,17 @@ export default function Home() {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [isRunning, formtime]);
+  }, [isRunning, formtime, quotes]);
 
   const handleIntervalComplete = () => {
     setShowAlert(true);
     try {
-      new Audio("/notification.mp3").play().catch(() => {});
+    const audio = new Audio('/notification.mp3');
+    audio.volume = 0.01; // Уровень громкости: 30% от максимума (попробуй от 0.1 до 0.4)
+    audio.play().catch(() => {});
     } catch {}
-    setQuote(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
+
+
     setSessionCount((prev) => {
       const updated = prev + 1;
       localStorage.setItem("focus_intervals", String(updated));
@@ -75,8 +93,6 @@ export default function Home() {
     setFormTime(timeInSeconds);
     setSecondsLeft(timeInSeconds);
     setShowsSetting(false);
-
-    
   };
 
   const handleToForm = () => {
@@ -103,7 +119,7 @@ export default function Home() {
             href="/quotes"
             className="absolute right-4 top-4 text-xs font-semibold text-slate-400 hover:text-white transition"
           >
-            Перейти в настройки → 
+            Перейти в цитаты →
           </Link>
 
           <header className="text-center mt-2">
@@ -124,7 +140,7 @@ export default function Home() {
             onToggle={handleToggle}
             onReset={handleReset}
           />
-          <SessionCounter count={sessionCount} />
+          {/* <SessionCounter count={sessionCount} /> */}
         </div>
       )}
     </main>
