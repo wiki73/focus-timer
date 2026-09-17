@@ -4,5 +4,5 @@ interface FocusAlertProps {
 }
 
 export function FocusAlert({ isOpen }: FocusAlertProps) {
-  return <div>{isOpen && <div>Ты в фокусе</div>}</div>;
+  return <div >{isOpen && <div>Ты в фокусе</div>}</div>;
 }

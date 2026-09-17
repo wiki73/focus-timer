@@ -24,6 +24,8 @@ export default function Home() {
   const [showAlert, setShowAlert] = useState(false);
   const [sessionCount, setSessionCount] = useState(0);
 
+  const [activeSound, setActiveSound] = useState("/notification.mp3");
+
   const [quotes, setQuotes] = useState<string[]>(DEFAULT_QUOTES);
   const [quote, setQuote] = useState(DEFAULT_QUOTES[0]);
 
@@ -67,11 +69,10 @@ export default function Home() {
   const handleIntervalComplete = () => {
     setShowAlert(true);
     try {
-    const audio = new Audio('/notification.mp3');
-    audio.volume = 0.01; // Уровень громкости: 30% от максимума (попробуй от 0.1 до 0.4)
-    audio.play().catch(() => {});
+      const audio = new Audio(activeSound);
+      audio.volume = 0.3; // Уровень громкости: 30% от максимума (попробуй от 0.1 до 0.4)
+      audio.play().catch(() => {});
     } catch {}
-
 
     setSessionCount((prev) => {
       const updated = prev + 1;
@@ -88,8 +89,10 @@ export default function Home() {
     setShowAlert(false);
   };
 
-  const handleFormData = (time: number) => {
-    const timeInSeconds = time * 60;
+  const handleFormData = (time: number, sound: string) => {
+    const timeInSeconds = 20;
+    // const timeInSeconds = time * 60;
+    setActiveSound(sound);
     setFormTime(timeInSeconds);
     setSecondsLeft(timeInSeconds);
     setShowsSetting(false);
@@ -129,10 +132,10 @@ export default function Home() {
             <p className="text-slate-400 text-sm mt-1">В фокусе</p>
           </header>
 
-          <FocusAlert
+          {/* <FocusAlert
             isOpen={showAlert}
             onConfirm={() => setShowAlert(false)}
-          />
+          /> */}
           <QuoteCard quote={quote} />
           <TimerDisplay secondsLeft={secondsLeft} />
           <TimerControls
